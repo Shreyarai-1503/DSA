@@ -1,0 +1,186 @@
+/*Company maintains employee information as employee ID, name, designation and salary. Allow user to add, delete information of employee. Display information of particular employee. If employee does not exist an appropriate message is displayed. If it is, then the system displays the employee details. Use index sequential file to maintain the data.*/
+
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <cstring>
+using namespace std;
+
+const char* fileName = "Employee.txt";
+
+class Employee {
+private:
+    int EmpID;
+    char EmpName[50], Post[50], Department[10];
+    float Salary;
+public:
+    void ReadData();
+    int GetID() const;
+    void DisplayRecord() const;
+    const char* GetDepartment() const;
+};
+
+void Employee::ReadData() {
+    cout << "Employee ID: ";
+    cin >> EmpID;
+    cout << "Employee Name: ";
+    cin >> EmpName;
+    cout << "Employee's Post: ";
+    cin >> Post;
+    cout << "Employee's Department: ";
+    cin >> Department;
+    cout << "Salary: ";
+    cin >> Salary;
+}
+
+void Employee::DisplayRecord() const {
+    cout << endl << "_______________________________";
+    cout << endl << setw(5) << EmpID << setw(15) << EmpName << setw(15) << Post 
+         << setw(15) << Department << setw(8) << Salary;
+}
+
+int Employee::GetID() const {
+    return EmpID;
+}
+
+const char* Employee::GetDepartment() const {
+    return Department;
+}
+
+int main() {
+    Employee emp, e;
+    char option, ch, Dept[50];
+    int ID, isFound;
+    fstream file;
+
+    do {
+        cout << "*******Menu********" << endl;
+        cout << "Enter your option:" << endl;
+        cout << "1 => Add a new record" << endl;
+        cout << "2 => Search record from employee id" << endl;
+        cout << "3 => List Employee of particular department" << endl;
+        cout << "4 => Display all employees" << endl;
+        cout << "5 => Update record of an employee" << endl;
+        cout << "6 => Delete record of a particular employee" << endl;
+        cout << "7 => Exit from the program" << endl;
+        cout << "********************" << endl;
+        cin >> option;
+
+        switch (option) {
+            case '1':
+                emp.ReadData();
+                file.open(fileName, ios::binary | ios::app);
+                file.write(reinterpret_cast<char*>(&emp), sizeof(emp));
+                file.close();
+                cout << "New record has been added successfully..." << endl;
+                break;
+
+            case '2':
+                cout << "Enter ID of an employee to be searched: ";
+                cin >> ID;
+                file.open(fileName, ios::binary | ios::in);
+                isFound = 0;
+                while (file.read(reinterpret_cast<char*>(&e), sizeof(e))) {
+                    if (e.GetID() == ID) {
+                        cout << "Record found:" << endl;
+                        e.DisplayRecord();
+                        isFound = 1;
+                        break;
+                    }
+                }
+                file.close();
+                if (!isFound)
+                    cout << "Data not found for employee ID#" << ID << endl;
+                break;
+
+            case '3':
+                cout << "Enter department name to list employees within it: ";
+                cin >> Dept;
+                file.open(fileName, ios::binary | ios::in);
+                isFound = 0;
+                while (file.read(reinterpret_cast<char*>(&e), sizeof(e))) {
+                    if (strcmp(e.GetDepartment(), Dept) == 0) {
+                        cout << "Record found for department " << Dept << ":" << endl;
+                        e.DisplayRecord();
+                        isFound = 1;
+                    }
+                }
+                file.close();
+                if (!isFound)
+                    cout << "Data not found for department " << Dept << endl;
+                break;
+
+            case '4':
+                file.open(fileName, ios::binary | ios::in);
+                int counter = 0;
+                while (file.read(reinterpret_cast<char*>(&e), sizeof(e))) {
+                    counter++;
+                    if (counter == 1) {
+                        cout << setw(5) << "ID" << setw(15) << "Name" << setw(15) << "Post"
+                             << setw(15) << "Department" << setw(8) << "Salary" << endl;
+                    }
+                    e.DisplayRecord();
+                }
+                file.close();
+                cout << endl << counter << " records found..." << endl;
+                break;
+
+            case '5':
+                cout << "Enter employee ID to be updated: ";
+                cin >> ID;
+                file.open(fileName, ios::binary | ios::in | ios::out);
+                isFound = 0;
+                while (file.read(reinterpret_cast<char*>(&e), sizeof(e))) {
+                    if (e.GetID() == ID) {
+                        cout << "Old record of employee ID " << ID << ":" << endl;
+                        e.DisplayRecord();
+                        isFound = 1;
+                        break;
+                    }
+                }
+                if (isFound) {
+                    int pos = file.tellg();
+                    file.seekp(pos - sizeof(e));
+                    emp.ReadData();
+                    file.write(reinterpret_cast<char*>(&emp), sizeof(emp));
+                    cout << "Record updated successfully." << endl;
+                } else {
+                    cout << "Data not found for employee ID#" << ID << endl;
+                }
+                file.close();
+                break;
+
+            case '6':
+                cout << "Enter employee ID to be deleted: ";
+                cin >> ID;
+                ifstream ifile(fileName, ios::binary);
+                ofstream ofile("temp.txt", ios::binary);
+                isFound = 0;
+                while (ifile.read(reinterpret_cast<char*>(&e), sizeof(e))) {
+                    if (e.GetID() != ID) {
+                        ofile.write(reinterpret_cast<char*>(&e), sizeof(e));
+                    } else {
+                        cout << "Record deleted successfully." << endl;
+                        isFound = 1;
+                    }
+                }
+                ifile.close();
+                ofile.close();
+                remove(fileName);
+                rename("temp.txt", fileName);
+                break;
+
+            case '7':
+                exit(0);
+                break;
+
+            default:
+                cout << "Invalid option. Please try again." << endl;
+        }
+
+        cout << "\nDo you want to continue (y/n)? ";
+        cin >> ch;
+    } while (ch != 'n');
+
+    return 0;
+}

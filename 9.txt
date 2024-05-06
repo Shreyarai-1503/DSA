@@ -1,0 +1,252 @@
+/*A Dictionary stores keywords and its meanings. Provide facility for adding new keywords, deleting keywords, updating values of any entry. Provide facility to display whole data sorted in ascending/ Descending order. Also find how many maximum comparisons may require for finding any keyword. Use Height balance tree and find the complexity for finding a keyword*/
+
+#include<iostream>
+#include<string.h>
+using namespace std;
+
+class node {
+public:
+    char keyword[20];
+    char meaning[20];
+    node *left;
+    node *right;
+    int ht;
+
+    node() {
+        strcpy(meaning, "");
+        strcpy(keyword, "");
+        left = nullptr;
+        right = nullptr;
+    }
+};
+
+class tree {
+private:
+    node *root;
+
+public:
+    tree() {
+        root = nullptr;
+    }
+
+    node *insert(node *T, char word[20], char mean[20]);
+    void preorder(node *root);
+    void inorder(node *root);
+    void postorder(node *root);
+    void display();
+    void modify();
+    void delet();
+    node *inorderSuccessor(node *root);
+    int height(node *T);
+    int balanceFactor(node *T);
+    node *rotateLeft(node *x);
+    node *rotateRight(node *T);
+    void search();
+};
+
+int tree::height(node *T) {
+    if (T == nullptr)
+        return 0;
+    return 1 + max(height(T->left), height(T->right));
+}
+
+int tree::balanceFactor(node *T) {
+    if (T == nullptr)
+        return 0;
+    return height(T->left) - height(T->right);
+}
+
+node *tree::rotateRight(node *x) {
+    node *y = x->left;
+    x->left = y->right;
+    y->right = x;
+    x->ht = height(x);
+    y->ht = height(y);
+    return y;
+}
+
+node *tree::rotateLeft(node *T) {
+    node *temp = T->right;
+    T->right = temp->left;
+    temp->left = T;
+    T->ht = height(T);
+    temp->ht = height(temp);
+    return temp;
+}
+
+node *tree::insert(node *T, char word[20], char mean[20]) {
+    if (T == nullptr) {
+        T = new node();
+        strcpy(T->keyword, word);
+        strcpy(T->meaning, mean);
+        return T;
+    }
+
+    if (strcmp(word, T->keyword) > 0) {
+        T->right = insert(T->right, word, mean);
+        if (balanceFactor(T) == -2) {
+            if (strcmp(word, T->right->keyword) > 0)
+                T = rotateLeft(T);
+            else {
+                T->right = rotateRight(T->right);
+                T = rotateLeft(T);
+            }
+        }
+    } else if (strcmp(word, T->keyword) < 0) {
+        T->left = insert(T->left, word, mean);
+        if (balanceFactor(T) == 2) {
+            if (strcmp(word, T->left->keyword) < 0)
+                T = rotateRight(T);
+            else {
+                T->left = rotateLeft(T->left);
+                T = rotateRight(T);
+            }
+        }
+    }
+    T->ht = height(T);
+    return T;
+}
+
+void tree::modify() {
+    char data[20], newMeaning[20];
+    cout << "\nEnter the word to modify: ";
+    cin >> data;
+    cout << "Enter the new meaning: ";
+    cin >> newMeaning;
+
+    node *temp = root;
+    bool found = false;
+
+    while (temp != nullptr) {
+        if (strcmp(temp->keyword, data) == 0) {
+            strcpy(temp->meaning, newMeaning);
+            found = true;
+            break;
+        } else if (strcmp(data, temp->keyword) > 0) {
+            temp = temp->right;
+        } else {
+            temp = temp->left;
+        }
+    }
+
+    if (found) {
+        cout << "\nThe keyword " << temp->keyword << " has been modified with meaning: " << temp->meaning << endl;
+    } else {
+        cout << "\nThe word " << data << " is not present in the BST." << endl;
+    }
+}
+
+void tree::delet() {
+    // Implementation of deletion
+    // (not provided in the original code)
+}
+
+void tree::search() {
+    char data[20];
+    cout << "\nEnter the word to search: ";
+    cin >> data;
+
+    node *temp = root;
+    bool found = false;
+
+    while (temp != nullptr) {
+        if (strcmp(temp->keyword, data) == 0) {
+            found = true;
+            break;
+        } else if (strcmp(data, temp->keyword) > 0) {
+            temp = temp->right;
+        } else {
+            temp = temp->left;
+        }
+    }
+
+    if (found) {
+        cout << "\nThe word " << data << " is present in the BST." << endl;
+    } else {
+        cout << "\nThe word " << data << " is not present in the BST." << endl;
+    }
+}
+
+void tree::preorder(node *root) {
+    if (root != nullptr) {
+        cout << root->keyword << " ! " << root->meaning << endl;
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+void tree::inorder(node *root) {
+    if (root != nullptr) {
+        inorder(root->left);
+        cout << root->keyword << " ! " << root->meaning << endl;
+        inorder(root->right);
+    }
+}
+
+void tree::postorder(node *root) {
+    if (root != nullptr) {
+        postorder(root->left);
+        postorder(root->right);
+        cout << root->keyword << " ! " << root->meaning << endl;
+    }
+}
+
+void tree::display() {
+    int choice;
+    do {
+        cout << "\nChoose an option:\n";
+        cout << "1. Pre-order traversal\n";
+        cout << "2. In-order traversal\n";
+        cout << "3. Post-order traversal\n";
+        cout << "4. Modify a keyword\n";
+        cout << "5. Search for a keyword\n";
+        cout << "0. Exit\n";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "\nPre-order traversal:\n";
+                preorder(root);
+                break;
+            case 2:
+                cout << "\nIn-order traversal:\n";
+                inorder(root);
+                break;
+            case 3:
+                cout << "\nPost-order traversal:\n";
+                postorder(root);
+                break;
+            case 4:
+                modify();
+                break;
+            case 5:
+                search();
+                break;
+            case 0:
+                cout << "\nExiting...\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 0);
+}
+
+int main() {
+    tree bst;
+    char key[20], mean[20];
+    int ans;
+
+    do {
+        cout << "\nEnter keyword and meaning: ";
+        cin >> key >> mean;
+        bst.insert(bst.root, key, mean);
+
+        cout << "Want to continue (1/0): ";
+        cin >> ans;
+    } while (ans == 1);
+
+    cout << "\nBinary Search Tree Contents:\n";
+    bst.display();
+
+    return 0;
+}
