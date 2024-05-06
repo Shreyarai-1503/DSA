@@ -1,0 +1,140 @@
+/*There are flight paths between cities. If there is a flight between city A and city B then there is an edge between the cities. The cost of the edge can be the time that flight takes to reach city B from A, or the amount of fuel used for the journey. Represent this as a graph. The node can be represented by airport name or name of the city. Use adjacency list representation of the graph or use adjacency matrix representation of the graph. Check whether the graph is connected or not. Justify the storage representation used*/
+
+#include<iostream>
+using namespace std;
+int cities = 10;
+
+struct node {   
+    string vertex;
+    int time;
+    node *next;
+};   
+
+class Path {
+    int m[10][10];
+    int n;
+    char ch;
+    string v[10];
+    node *head[10];
+    node *temp = NULL;
+    
+    public:
+    Path(){
+        for(int i=0; i<10; i++){
+            head[i] = NULL;
+            for(int j=0; j<10; j++)
+                m[i][j] = 0;
+        }
+    }
+    
+    void getGraph();
+    void adjList();
+    void displayM();
+    void displayA();
+};
+
+void Path::getGraph(){
+    cout<<"\nEnter num of cities (max 10): ";
+    cin>>n;
+    cout<<"\nEnter names of cities"<<endl;
+    for(int i = 0; i<n; i++)
+        cin>>v[i];
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cout<<"\nIf path is present between : "<<v[i]<<" and "<<v[j]<<" press Y or else N: ";
+            cin>>ch;
+            if(ch == 'Y' || ch == 'y'){
+                cout<<"Enter the time required to reach "<<v[j]<<" from "<<v[i]<<" (in min.) : ";
+                cin>>m[i][j];
+            }
+        }
+    }
+    adjList();
+}
+
+void Path::adjList(){
+    for(int i=0; i<n; i++){
+        node *p = new node;
+        p->next = NULL;
+        p->vertex = v[i];
+        head[i] = p;
+    }
+    
+    for(int i = 0; i<n; i++){
+        for(int j=0; j<n; j++){
+            if(m[i][j] != 0){
+                node *p = new node;
+                p->vertex=v[j];
+                p->time = m[i][j];
+                p->next = NULL;
+                if(head[i]->next == NULL)
+                    head[i]->next = p;
+                else {
+                    temp = head[i];
+                    while(temp->next != NULL)
+                        temp = temp->next;
+                    temp->next = p;
+                }
+            }
+        }
+    }
+}
+
+void Path::displayM(){
+    cout<<"\n****Adjacency Matrix****";
+    cout<<endl<<endl;
+    for(int i = 0; i<n; i++)
+        cout<<"\t"<<v[i];
+        
+    for(int i=0; i<n; i++){
+        cout<<endl;
+        cout<<v[i];
+        for(int j=0; j<n; j++)
+            cout<<"\t"<<m[i][j];
+    }
+}
+
+void Path::displayA(){
+    cout<<"\n****Adjacency List****";
+    cout<<endl<<endl;
+    
+    for(int i = 0; i<n; i++){
+        cout<<"\n"<<head[i]->vertex;
+        temp = head[i]->next;
+        while(temp != NULL){
+            cout<<" -> "<<temp->vertex;
+            temp = temp->next;
+        }
+    }
+    
+    cout<<"\nTime Required\n";
+    
+    for(int i = 0; i<n; i++){
+        if(head[i] == NULL)
+            cout<<"List not present"<<endl;
+            
+        else{
+            temp = head[i]->next;
+            while(temp != NULL){
+                cout<<"\n"<<head[i]->vertex<<" -> "<<temp->vertex<<"\tTime: "<<temp->time;
+                temp = temp->next;
+            }
+        }
+    }
+}
+
+int main(){
+    Path p;
+    int ch;
+    do{
+        cout<<"\n\nMENU \n1.Create Graph \n2.Adjacency List Represention \n3.Matrix Representation"<<endl;
+        cin>>ch;
+        
+        switch(ch){
+            case 1: p.getGraph();   break;
+            case 2: p.displayA();   break;
+            case 3: p.displayM();   break;
+        }
+    }while(ch < 4);
+    return 1;
+}

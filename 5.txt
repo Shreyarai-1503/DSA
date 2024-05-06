@@ -1,0 +1,170 @@
+/*A Dictionary stores keywords and its meanings. Provide facility for adding new keywords, deleting keywords, updating values of any entry. Provide facility to display whole data sorted in ascending/ Descending order. Also find how many maximum comparisons may require for finding any keyword. Use Binary Search Tree for implementation*/
+
+#include <iostream>
+#include <cstring>
+using namespace std;
+struct node {
+    char k[20];
+    char m[20];
+    node *left = NULL;
+    node *right = NULL;
+};
+
+class Dict {
+    public:
+    node *root = NULL, *temp;
+    void create();
+    void insert(node *root, node *temp);
+    void display(node *);
+    void search(char []);
+    void update(char []);
+    node* del(node *, char []);
+    node* min(node *);
+};
+
+void Dict:: create(){
+    int n;
+    cout<<"Enter num of keywords you want to add: ";
+    cin>>n;
+    
+    for(int i=0; i<n; i++){
+        temp = new node;
+        cout<<"\nEnter Keyword: ";
+        cin>>temp->k;
+        cout<<"Enter Meaning: ";
+        cin>>temp->m;
+        
+        if(root == NULL)
+            root = temp;
+        else
+            insert(root, temp);
+    }
+}
+
+void Dict::insert(node *root, node *temp){
+    if(strcmp(temp->k, root->k) < 0){
+        if(root->left == NULL)
+            root->left = temp;
+        else
+            insert(root->left, temp);
+    }
+    else{
+        if(root->right == NULL)
+            root->right = temp;
+        else
+            insert(root->right, temp);
+    }
+}
+
+void Dict::display(node *root){
+    if(root != NULL){
+        display(root->left);
+        cout<<"\nKeyword: "<<root->k;
+        cout<<"\tMeaning: "<<root->m;
+        display(root->right);
+    }
+}
+
+void Dict::search(char k[20]){
+    int c = 0;
+    temp = root;
+    while(temp != NULL){
+        c++;
+        if(strcmp(k, temp->k) == 0){
+            cout<<"\nKeyWord found. Meaning: "<<temp->m<<endl;
+            cout<<"\nNo of comparison: "<<c;
+            return;
+        }
+        else if(strcmp(k, temp->k) < 0)
+            temp = temp->left;
+        else 
+            temp = temp->right;
+    }
+    cout<<"\nKeyword NOT found"<<endl;
+}
+
+void Dict::update(char k[20]){
+    temp = root;
+    while(temp != NULL){
+        if(strcmp(k, temp->k) == 0){
+            cout<<"\nKeyWord found.\nEnter new Meaning: ";
+            cin>>temp->m;
+            return;
+        }
+        else if(strcmp(k, temp->k) < 0)
+            temp = temp->left;
+        else 
+            temp = temp->right;
+    }
+    cout<<"\nKeyword NOT found"<<endl;
+}
+
+node* Dict::min(node *q) {
+    while(q->left != NULL)
+        q = q->left;
+    return q;
+}
+
+node* Dict::del(node *root, char k[20]) {
+    if (root == NULL) {
+        cout << "\nElement not Found";
+        return root;
+    }
+    
+    if (strcmp(k, root->k) < 0) {
+        root->left = del(root->left, k);
+    } else if (strcmp(k, root->k) > 0) {
+        root->right = del(root->right, k);
+    } else { // Node to be deleted found
+        if (root->right == NULL && root->left == NULL) { // No child
+            delete root;
+            return NULL;
+        } else if (root->right == NULL) { // Only left child
+            temp = root;
+            root = root->left;
+            delete temp;
+            return root;
+        } else if (root->left == NULL) { // Only right child
+            temp = root;
+            root = root->right;
+            delete temp;
+            return root;
+        } else { // Two children
+            node *succ = min(root->right);
+            strcpy(root->k, succ->k);
+            root->right = del(root->right, succ->k);
+            return root;
+        }
+    }
+    return root;
+}
+
+
+int main(){
+    int ch;
+    Dict d;
+    char key[20];
+    do{
+        cout<<"\nMENU \n1.Create \n2.Display \n3.Search \n4.Update \n5.Delete \nEnter your choice: ";
+        cin>>ch;
+        switch(ch){
+            case 1: d.create();
+                    break;
+            case 2: d.display(d.root);
+                    break;
+            case 3: cout<<"Enter the Keyword to search: ";
+                    cin>>key;
+                    d.search(key);
+                    break;
+            case 4: cout<<"Enter the Keyword to update: ";
+                    cin>>key;
+                    d.update(key);
+                    break;
+            case 5: cout<<"Enter the Keyword to delete: ";
+                    cin>>key;
+                    d.del(d.root, key);
+                    break;
+        }
+    }while(ch < 6);
+    return 0;
+}

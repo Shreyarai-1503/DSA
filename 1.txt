@@ -1,0 +1,65 @@
+'''Consider telephone book database of N clients. Make use of a hash table implementation to quickly look up client’s telephone number. Make use of two collision handling techniques and compare them using number of comparisons required to find a set of telephone numbers'''
+
+size = 3
+client_list = [None]*size
+
+def add():
+    client_id = int(input("Enter Client ID: "))
+    name = input("Enter name: ")
+    tele = input("Enter telephone number: ")
+    client_details = [client_id, name, tele]
+    idx = client_id % size
+    c = 0
+    for i in range(size):
+        c += 1
+        if(client_list[idx] == None):
+            client_list[idx] = client_details
+            break
+        else:
+            #idx = liner(idx)
+            idx = quadratic(idx, c)
+            
+def search():
+    client_id = int(input("Enter Client ID to search: "))
+    idx = client_id % size
+    c = 0
+    for i in range(size):
+        c += 1
+        if(client_list[idx] != None):
+            if(client_list[idx][0] == client_id):
+                print("Client Details: ",client_list[idx])
+                break
+        #idx = liner(idx)
+        idx = quadratic(idx, c)
+    else:
+        print("Not found")
+        
+def delete():
+    client_id = int(input("Enter Client ID to delete: "))
+    idx = client_id % size
+    c = 0
+    for i in range(size):
+        c += 1
+        if(client_list[idx] != None):
+            if(client_list[idx][0] == client_id):
+                client_list[idx] = None
+                print("Details Deleted: ")
+                break
+        #idx = liner(idx)
+        idx = quadratic(idx, c)
+    else:
+        print("Not found")
+        
+def liner(idx):
+    return (idx + 1)%size
+
+def quadratic(idx, c):
+    return (idx + (c**2))%size
+    
+n = int(input("How many details you want to add: "))
+for i in range(n):
+    add()
+print(client_list)
+search()
+delete()
+print(client_list)

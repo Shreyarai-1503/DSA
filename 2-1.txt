@@ -1,0 +1,87 @@
+'''Implement all the functions of a dictionary (ADT) using hashing and handle collisions using chaining with / without replacement. Data: Set of (key, value) pairs, Keys are mapped to values, Keys must be comparable, Keys must be unique. Standard Operations: Insert(key, value), Find(key), Delete(key)'''
+
+table = []
+size = 0
+bucket = {}
+
+def create():
+    global size
+    size = int(input("Enter the size of table: "))
+    for i in range(size):
+        table.append([None, -1])
+        bucket[i] = -1
+        
+def printTable():
+    for i in range(size):
+        print(table[i])
+    print()
+    
+def chainInsert(key):
+    Hash = key%size
+    if(table[Hash][0] == None):
+        table[Hash][0] = key
+        bucket[key%size] = Hash;
+    else:
+        for i in range(size):
+            Hash = (key+i)%size
+            if(table[Hash][0] == None):
+                table[Hash][0] = key
+                if(bucket[key%size] != -1):
+                    table[bucket[key%size]][1] = Hash
+                bucket[key%size] = Hash
+                break
+ 
+def search(key):
+    Hash = key%size
+    if(table[Hash][0] == key):
+        print("Key: ", key, " is found at index : ", Hash)
+    else:
+        next_index = table[Hash][1]
+        while next_index != -1:
+            if table[next_index][0] == key:
+                print("Key:", key, "is found at index:", next_index)
+                return
+            next_index = table[next_index][1]
+        print("Key:", key, "not found in the table")
+ 
+ 
+def Delete(key):
+    Hash = key%size
+    if(table[Hash][0] == key):
+        table[Hash][0] = None
+        if table[Hash][1] != -1:
+            bucket[key%size] = table[Hash][1]
+        else:
+            bucket[key % size] = -1
+        print("Key:", key, "deleted successfully")
+        
+    else:
+        prev_index = Hash
+        current_index = table[Hash][1]
+        while current_index != -1:
+            if table[current_index][0] == key:
+                table[prev_index][1] = table[current_index][1]
+                table[current_index][0] = None
+                table[current_index][1] = -1
+                print("Key:", key, "deleted successfully")
+                return
+            prev_index = current_index
+            current_index = table[current_index][1]
+        print("Key:", key, "not found in the table")
+        
+create() 
+while(1):
+    ch = int(input("\n****Menu**** \n1.Insert \n2.Search \n3.Delete \n4.Print \n0.Exit \n"))
+    if ch==1:
+        key = int(input("Enter key to insert: "))
+        chainInsert(key)
+    elif ch==2:
+        key = int(input("Enter key to search: "))
+        search(key)
+    elif ch==3:
+        key = int(input("Enter key to delete: "))
+        Delete(key)
+    elif ch==4:
+        printTable()
+    elif ch==0:
+        break

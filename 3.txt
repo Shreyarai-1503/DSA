@@ -1,0 +1,210 @@
+/*A book consists of chapters, chapters consist of section sand sections consist of subsections. Construct a tree and print the nodes. Find the time and space requirements of your method*/
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct node {
+    char name[20];
+    node *next;
+    node *down;
+    int flag;
+};
+
+class GLL {
+    char ch[20];
+    node *head=NULL, *temp=NULL, *t1=NULL, *t2=NULL;
+    int n;
+    public:
+        node *create();
+        void insertB();
+        void insertC();
+        void insertS();
+        void insertSS();
+        void display();
+};
+
+
+node* GLL::create(){
+    node *p=new node;
+    p->next=NULL;
+    p->down=NULL;
+    p->flag=0;
+    cout<<"\nEnter the name: ";
+    cin>>p->name;
+    return p;
+}
+
+void GLL::insertB(){
+    if(head == NULL){
+        t1 = create();
+        head=t1;
+    } else 
+        cout<<"\nBook Exist"<<endl;
+}
+
+void GLL::insertC(){
+    if(head==NULL)
+        cout<<"\nBook does not Exist"<<endl;
+        
+    else {
+        cout<<"\nHow many chapters you want to insert: ";
+        cin>>n;
+        
+        for(int i=0; i<n; i++){
+            t1 = create();
+            if(head->flag == 0){
+                head->down = t1;
+                head->flag = 1;
+            }
+            else {
+                temp = head->down;
+                while(temp->next != NULL)
+                    temp = temp->next;
+                temp->next = t1;
+            }
+        }
+    }
+}
+
+void GLL::insertS(){
+    if(head == NULL)
+        cout<<"\nBook does not Exist"<<endl;
+    
+    else{
+        if(head->flag == 0)
+            cout<<"\nNo Chapter Exist"<<endl;
+        
+        else{
+            cout<<"Enter the name of chapter in which you want to insert section: ";
+            cin>>ch;
+            temp = head->down;
+            
+            while(temp!=NULL){
+                if(strcmp(ch, temp->name) == 0){
+                    cout<<"\nHow many sections you want to add: ";
+                    cin>>n;
+                    for(int i=0; i<n; i++){
+                        t1 = create();
+                        if(temp->flag == 0){
+                            temp->down = t1;
+                            temp->flag = 1;
+                        } else {
+                            temp = temp->down;
+                            while(temp->next != NULL)
+                                temp = temp->next;
+                            temp->next = t1;
+                        }
+                    } break;
+                } temp = temp->next;
+            }
+        }
+    }
+}
+
+void GLL::insertSS(){
+    if(head == NULL)
+        cout<<"\nBook does not Exist"<<endl;
+    
+    else {
+        if(head->flag == 0)
+            cout<<"\nNo Chapter exist"<<endl;
+            
+        else {
+            cout<<"Enter the name of Chapter in which you want to insert Sub-Section: ";
+            cin>>ch;
+            temp = head->down;
+            
+            while(temp!=NULL){
+                if(strcmp(ch, temp->name) == 0){
+                    if(temp->flag == 0 ){
+                        cout<<"\nNo Section Exist"<<endl;
+                        break;
+                    }    
+                    else{
+                        cout<<"Enter the name of Section in which you want to insert Sub-section: ";
+                        cin>>ch;
+                        temp = temp->down;
+                        
+                        while(temp != NULL){
+                            if(strcmp(ch, temp->name) == 0){
+                                cout<<"\nHow many Sub-sections you want to insert: ";
+                                cin>>n;
+                                
+                                for(int i=0; i<n; i++){
+                                    t1 = create();
+                                    if(temp->flag == 0){
+                                        temp->down = t1;
+                                        temp->flag = 1;
+                                    }
+                                    else {
+                                        temp = temp->down;
+                                        while(temp->next != NULL)
+                                            temp = temp->next;
+                                        temp->next = t1;
+                                    }
+                                } break;
+                            } temp = temp->next;
+                        }
+                    } break;
+                } temp = temp->next;
+            }
+        }
+    }
+}
+
+void GLL::display(){
+    if(head == NULL)
+        cout<<"Book does not exist"<<endl;
+    
+    else{
+        temp = head;
+        cout<<"\nNAME OF BOOK:  "<<temp->name<<endl;
+        
+        if(temp->flag == 1){
+            temp = temp->down;
+            
+            while(temp != NULL){
+                cout<<"\n\n****NAME OF CHAPTER:   "<<temp->name<<"****"<<endl;
+                if(temp->flag == 1){
+                    t1 = temp->down;
+                    
+                    while(t1!=NULL){
+                        cout<<"\nNAME OF SECTION:   "<<t1->name;
+                        if(t1->flag == 1){
+                            t2 = t1->down;
+                            
+                            while(t2!=NULL){
+                                cout<<"\nNAME OF SUB-SECTION:   "<<t2->name;
+                                t2 = t2->next;
+                            }
+                        }
+                        t1 = t1->next;
+                    }
+                }
+                temp = temp->next;
+            }
+        }
+    }
+}
+
+int main() {
+    GLL book;
+    int choice;
+    do{
+        cout<<"\n\nMENU \n1.Insert Book \n2.Insert Chapter \n3.Insert Section \n4.Insert Sub-Section \n5.Display Book \n6.Exit"<<endl;
+        cin>>choice;
+        switch(choice){
+            case 1: book.insertB();
+                    break;
+            case 2: book.insertC();
+                    break;
+            case 3: book.insertS();
+                    break;
+            case 4: book.insertSS();
+                    break;
+            case 5: book.display();
+                    break;
+        }
+    } while(choice < 6);
+    return 0;
+}

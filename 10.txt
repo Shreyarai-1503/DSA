@@ -1,0 +1,74 @@
+/*Read the marks obtained by students of second year in an online examination of particular subject. Find out maximum and minimum marks obtained in that subject. Use heap data structure. Analyze the algorithm*/
+
+#include <iostream>
+using namespace std;
+
+void min_heapify(int *a, int i, int n){  //O(log n)
+    int temp = a[i];
+    int j = 2 * i;
+    while (j <= n){
+        if (j < n && a[j+1] < a[j])
+            j++;
+        if (temp < a[j])
+            break;
+        else if (temp >= a[j]){
+            a[j/2] = a[j];
+            j = 2 * j;
+        }
+    }
+    a[j/2] = temp;
+}
+void max_heapify(int *a,int i,int n){
+    int temp = a[i];
+    int j = 2 * i;
+    while (j <= n){
+        if (j < n && a[j+1] > a[j])
+            j++;
+        if (temp > a[j])
+            break;
+        else if (temp <= a[j]){
+            a[j/2] = a[j];
+            j = 2 * j;
+        }
+    }
+    a[j/2] = temp;
+}
+void build_minheap(int *a, int n){
+    for(int i = n/2; i >= 1; i--)
+        min_heapify(a,i,n);
+}
+void build_maxheap(int *a, int n){  //O(n*log n)
+    for(int i = n/2; i >= 1; i--) //O(n)
+        max_heapify(a,i,n);
+}
+int main(){
+    int n ,ch;
+    char choice;
+    cout<<"Enter num of marks to be entered in array: ";
+    cin>>n;
+    int a[20];
+    for (int i = 1; i <= n; i++){
+        cout<<"Enter marks "<<(i)<<" : ";
+        cin>>a[i];
+    }
+    do{
+    	cout<<"\n***Enter the choice***\n1.MIN Heap\n2.MAX Heap\n";
+    	cin>>ch;
+    	switch(ch){
+    		case 1:
+    			build_minheap(a, n);
+  			    cout<<"Min Heap\n";
+   			    for (int i = 1; i <= n; i++)
+        			cout<<a[i]<<endl;
+    			break;
+    		case 2:
+    			build_maxheap(a, n);
+  			    cout<<"Max Heap\n";
+   			    for (int i = 1; i <= n; i++)
+        			cout<<a[i]<<endl;
+    			break;
+    	}
+    	cout<<"Do you wany to continue (Y/N) : ";
+    	cin>>choice;
+    }while(choice=='Y'||choice=='y');
+}
