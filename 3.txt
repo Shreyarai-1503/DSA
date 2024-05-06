@@ -15,12 +15,12 @@ class GLL {
     node *head=NULL, *temp=NULL, *t1=NULL, *t2=NULL;
     int n;
     public:
-        node *create();
-        void insertB();
-        void insertC();
-        void insertS();
-        void insertSS();
-        void display();
+        node *create();     //O(1)
+        void insertB();     //O(1)  
+        void insertC();     //O(n)
+        void insertS();     //O(n*m)
+        void insertSS();    //O(n*m*p)
+        void display();     //O(n*m*p)
 };
 
 

@@ -13,13 +13,13 @@ struct node {
 class Dict {
     public:
     node *root = NULL, *temp;
-    void create();
-    void insert(node *root, node *temp);
-    void display(node *);
-    void search(char []);
-    void update(char []);
-    node* del(node *, char []);
-    node* min(node *);
+    void create();  //O(nlogn): Avg   O(n^2): Worst
+    void insert(node *root, node *temp); //O(h)
+    void display(node *);  //O(n)
+    void search(char []);  //O(h)
+    void update(char []);  //O(h)
+    node* del(node *, char []);  //O(h)
+    node* min(node *);  //O(h)
 };
 
 void Dict:: create(){

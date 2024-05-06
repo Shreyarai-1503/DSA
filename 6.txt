@@ -2,7 +2,6 @@
 
 #include<iostream>
 using namespace std;
-int cities = 10;
 
 struct node {   
     string vertex;
@@ -27,10 +26,10 @@ class Path {
         }
     }
     
-    void getGraph();
-    void adjList();
-    void displayM();
-    void displayA();
+    void getGraph();     //O(n^2)     SC: O(n^2)
+    void adjList();      //O(n^2)     SC: O(n + e)
+    void displayM();     //O(n^2)     SC: O(n^2)
+    void displayA();     //O(n + e)   SC: O(n + e)
 };
 
 void Path::getGraph(){

@@ -12,15 +12,15 @@ int count;
 
 class bst{
     public:
-    void create();
-    void insert(node*,node*);
-    void disin(node*);
+    void create();      //O(nlogn): average case, O(n^2): worst-case (for skewed trees)
+    void insert(node*,node*);       //O(h)
+    void disin(node*);      //O(n)
     void dispre(node*);
     void dispost(node*);
-    void search(node*);
-    int height(node*);
-    void mirror(node*);
-    void min(node*);
+    void search(node*);     //O(h)  or O(nlogn)
+    int height(node*);      //O(n)
+    void mirror(node*);     //O(n)
+    void min(node*);        //O(h)  or O(nlogn)
     bst(){
       root=NULL;
       count=0;
